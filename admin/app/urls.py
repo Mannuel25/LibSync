@@ -8,8 +8,8 @@ router = DefaultRouter()
 app_name = "admin_mgt"
 
 router.register('users', UserViewSet, basename='users')
-router.register('books', UserViewSet, basename='books')
-router.register('borrowed_books', UserViewSet, basename='borrowed_books')
+router.register('books', BookViewSet, basename='books')
+router.register('borrowed_books', BorrowedBookViewSet, basename='borrowed_books')
 
 
 
@@ -19,5 +19,6 @@ urlpatterns = [
     url(r'^login/$', LoginView.as_view(), name='login'),
     url(r'^logout/$', LogoutView.as_view(), name='logout'),
     url(r'^token/refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
+    url(r'^unavailable_books/$', UnavailableBooksView.as_view(), name='unavailable_books'),
 ]
 

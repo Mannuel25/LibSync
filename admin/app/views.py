@@ -1,3 +1,4 @@
+from requests import Response
 from .models import *
 from .filters import *
 from .serializers import *
@@ -109,3 +110,11 @@ class BorrowedBookViewSet(ModelViewSet):
     queryset = BorrowedBook.objects.all()
     filterset_class = BorrowedBookFilter
 
+
+class UnavailableBooksView(APIView):
+    """List books that are currently borrowed and unavailable for borrowing"""
+
+    def get(self, request):
+        unavailable_books = BorrowedBook.objects.filter(returned=False)
+        books_data = BorrowedBookSerializer(unavailable_books, many=True).data
+        return CustomResponse.success(data=books_data, message="Unavailable books retrieved successfully")

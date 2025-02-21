@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
-from datetime import timedelta, date
+from datetime import date
 from .manager import UserProfileManager
+from .basemodel import BaseModel
 
 
 class User(AbstractUser, PermissionsMixin):
@@ -16,34 +17,30 @@ class User(AbstractUser, PermissionsMixin):
         return f"{self.first_name.title()} {self.last_name.title()}"
 
 
-class Book(models.Model):
+class Book(BaseModel):
     title = models.CharField(max_length=200)
     author = models.CharField(max_length=100)
     publisher = models.CharField(max_length=100)
     category = models.CharField(max_length=100)
-    isbn = models.CharField(max_length=20, unique=True)
+    isbn = models.CharField(max_length=13, unique=True)
     summary = models.TextField(blank=True, null=True)
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
 
 
-class BorrowedBook(models.Model):
+class BorrowedBook(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     borrow_date = models.DateField(auto_now_add=True)
     return_date = models.DateField(null=True, blank=True)
     returned = models.BooleanField(default=False)
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField(auto_now=True)
 
-    def save(self, *args, **kwargs):
-        # calculate return date based on borrow_date and loan duration when BorrowedBook instance is created
-        if not self.pk:
-            self.return_date = self.borrow_date + timedelta(days=7)  # Default to 7 days; can be configurable
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     # calculate return date based on borrow_date, default to 7 days
+    #     if not self.pk:
+    #         self.return_date = self.borrow_date + timedelta(days=7)
+    #     super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.user.username} - {self.book.title}"

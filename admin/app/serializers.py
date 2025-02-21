@@ -59,16 +59,39 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class BookSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Book
         fields = '__all__'
 
 
 class BorrowedBookSerializer(serializers.ModelSerializer):
+    user_info = serializers.SerializerMethodField()
+    book_info = serializers.SerializerMethodField()
+
+    def get_user_info(self, obj):
+        user = obj.user
+        if user:
+            return {
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.email
+            }
+        return None
+
+    def get_book_info(self, obj):
+        book = obj.book
+        if book:
+            return {
+                "title": book.title,
+                "author": book.author,
+                "publisher": book.publisher,
+                "category": book.category,
+                "isbn": book.isbn
+            }
+        return None
 
     class Meta:
         model = BorrowedBook
-        fields = '__all__'
+        fields = ["id", "user_info", "book_info", "borrow_date", "return_date"]
 
 

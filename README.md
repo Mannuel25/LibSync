@@ -38,6 +38,7 @@ docker-compose up --build -d
 ### 4. Run Migrations
 ```sh
 docker-compose exec frontend_api python manage.py migrate
+docker-compose exec admin_api python manage.py migrate
 ```
 
 ---

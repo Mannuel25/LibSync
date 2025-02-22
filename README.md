@@ -7,7 +7,7 @@ LibSync is a library management system with two APIs:
 
 ---
 
-## Installation & Setup 
+## Installation & Setup 🏗️
 ### 1. Clone the Repository
 ```sh
 git clone https://github.com/Mannuel25/LibSync.git
@@ -43,7 +43,7 @@ docker-compose exec admin_api python manage.py migrate
 
 ---
 
-## Usage
+## Usage 📖
 ### Access the APIs:
 - **Admin API**: `http://localhost:8000/admin_api/`
 - **Frontend API**: `http://localhost:8001/frontend_api/`
@@ -74,7 +74,7 @@ docker-compose exec admin_api python manage.py migrate
 
 ---
 
-## Running Tests
+## Running Tests 🧪
 To run the test suite, use:
 ```sh
 docker-compose exec admin_api python manage.py test
@@ -84,6 +84,6 @@ docker-compose exec frontend_api python manage.py test
 
 ---
 
-## License
+## License 📜
 This project is licensed under an [MIT License](LICENSE).
 

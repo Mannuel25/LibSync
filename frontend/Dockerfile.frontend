@@ -1,0 +1,17 @@
+# Use an official Python runtime as the base image
+FROM python:3.10
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the frontend code into the container
+COPY . .
+
+# Install dependencies
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Expose the frontend API port
+EXPOSE 8001
+
+# Run the frontend API
+CMD ["gunicorn", "--bind", "0.0.0.0:8001", "frontend_api.wsgi:application"]

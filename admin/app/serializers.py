@@ -2,6 +2,8 @@ import django.contrib.auth.password_validation as validators
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import *
+from datetime import datetime, timedelta
+from django.db import transaction
 
 
 class LoginSerializer(serializers.Serializer):
@@ -67,6 +69,8 @@ class BookSerializer(serializers.ModelSerializer):
 class BorrowedBookSerializer(serializers.ModelSerializer):
     user_info = serializers.SerializerMethodField()
     book_info = serializers.SerializerMethodField()
+    email = serializers.EmailField(required=False, write_only=True)
+    duration = serializers.IntegerField(required=True, write_only=True)
 
     def get_user_info(self, obj):
         user = obj.user
@@ -90,8 +94,22 @@ class BorrowedBookSerializer(serializers.ModelSerializer):
             }
         return None
 
+    def create(self, validated_data):
+        try:
+            with transaction.atomic():
+                duration = validated_data.pop("duration")
+                # calculate the return date
+                validated_data["borrow_date"] = datetime.now().date()
+                validated_data["return_date"] = validated_data["borrow_date"] + timedelta(days=duration)
+                # get the user id from the email - for frontend api
+                user = User.objects.get(email=validated_data.pop("email"))
+                validated_data["user"] = user
+                return super().create(validated_data)
+        except Exception as e:
+            raise Exception(str(e))
+
     class Meta:
         model = BorrowedBook
-        fields = ["id", "user_info", "book_info", "borrow_date", "return_date"]
+        fields = ["id", "user", "book", "user_info", "book_info", "borrow_date", "return_date", "duration", "email"]
 
 

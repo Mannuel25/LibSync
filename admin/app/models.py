@@ -30,22 +30,12 @@ class Book(BaseModel):
 
 
 class BorrowedBook(BaseModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     borrow_date = models.DateField(auto_now_add=True)
     return_date = models.DateField(null=True, blank=True)
     returned = models.BooleanField(default=False)
 
-    # def save(self, *args, **kwargs):
-    #     # calculate return date based on borrow_date, default to 7 days
-    #     if not self.pk:
-    #         self.return_date = self.borrow_date + timedelta(days=7)
-    #     super().save(*args, **kwargs)
-
     def __str__(self):
         return f"{self.user.username} - {self.book.title}"
-
-    @property
-    def is_overdue(self):
-        return self.return_date < date.today() and not self.returned
 

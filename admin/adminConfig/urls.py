@@ -8,7 +8,7 @@ from django.conf import settings
 
 schema_view = gs(
     openapi.Info(
-        title="LibSync API",
+        title="LibSync Admin API",
         default_version='1.0.0',
         description="Documentation for LibSync Admin API",
         terms_of_service="https://www.google.com/policies/terms/",
@@ -29,3 +29,4 @@ urlpatterns = [
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+

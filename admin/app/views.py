@@ -25,14 +25,14 @@ class LoginView(GenericAPIView):
             login(request, self.user)
             # generate a token for that user, and login
             refresh = RefreshToken.for_user(self.user)
-            user_info = UserSerializer(self.user).data
-            return CustomResponse.success(data=user_info, message="Login successful")
+            data = {"user_info": UserSerializer(self.user).data, "access_token": str(refresh.access_token), "refresh_token": str(refresh)}
+            return CustomResponse.success(data=data, message="Login successful")
         except Exception as e: 
             print(e)
             return CustomResponse.failed(message="Invalid login credentials")
 
 
-class SignupView(GenericAPIView):
+class RegistrationView(GenericAPIView):
     """Signup View for users"""
     serializer_class = SignupSerializer
     permission_classes = [permissions.AllowAny]
@@ -91,17 +91,26 @@ class LogoutView(APIView):
 
 
 class UserViewSet(ModelViewSet):
-    """User ViewSet for users"""
+    """User ViewSet for updating and deleting users (no creation)"""
     serializer_class = UserSerializer
     queryset = User.objects.all()
     filterset_class = UserFilter
+    http_method_names = ['get', 'patch', 'delete', 'head', 'options']
+
+    def create(self, request, *args, **kwargs):
+        """Prevent user creation from this viewset"""
+        return CustomResponse.failed(message="User creation is not allowed here.")
 
 
 class BookViewSet(ModelViewSet):
     """Book ViewSet for books"""
     serializer_class = BookSerializer
-    queryset = Book.objects.all()
     filterset_class = BookFilter
+
+    def get_queryset(self):
+        """Exclude books that are currently borrowed"""
+        borrowed_books = BorrowedBook.objects.filter(returned=False).values_list("book_id", flat=True)
+        return Book.objects.exclude(id__in=borrowed_books)
 
 
 class BorrowedBookViewSet(ModelViewSet):
@@ -118,3 +127,4 @@ class UnavailableBooksView(APIView):
         unavailable_books = BorrowedBook.objects.filter(returned=False)
         books_data = BorrowedBookSerializer(unavailable_books, many=True).data
         return CustomResponse.success(data=books_data, message="Unavailable books retrieved successfully")
+

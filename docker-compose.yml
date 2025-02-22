@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    container_name: backend_api
+    command: gunicorn --bind 0.0.0.0:8000 adminConfig.wsgi:application
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: frontend_api
+    command: gunicorn --bind 0.0.0.0:8001 frontend_api.wsgi:application
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    container_name: libsync_db
+    restart: always
+    environment:
+      POSTGRES_DB: libsync
+      POSTGRES_USER: libsync_user
+      POSTGRES_PASSWORD: libsync_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:

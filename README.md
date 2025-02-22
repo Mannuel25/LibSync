@@ -22,11 +22,11 @@ DEBUG=True
 SECRET_KEY=your_secret_key
 
 # Database Settings
-DB_NAME=libsync_db
-DB_USER=libsync_user
-DB_PASSWORD=your_db_password
-DB_HOST=db
-DB_PORT=5432
+NAME=libsync
+USER=libsync_user
+PASSWORD=libsync_pass
+HOST=db
+PORT=5432
 
 ```
 
